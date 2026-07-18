@@ -1,7 +1,12 @@
 package com.example.programlauncher.domain.model
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
+
+@Immutable
 data class GridSize(val columns: Int, val rows: Int)
 
+@Stable
 class LauncherLayout(
     var gridSize: GridSize,
     private val mutableItems: MutableList<LauncherItem> = mutableListOf()
