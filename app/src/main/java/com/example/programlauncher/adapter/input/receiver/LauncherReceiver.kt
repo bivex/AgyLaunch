@@ -87,6 +87,42 @@ class LauncherReceiver : BroadcastReceiver() {
                         container.clearLayoutUseCase.execute()
                         Log.i("LauncherReceiver", "Launcher layout cleared successfully.")
                     }
+
+                    "com.example.programlauncher.CREATE_FOLDER" -> {
+                        val label = intent.getStringExtra("label")
+                        val x = intent.getIntExtra("x", -1)
+                        val y = intent.getIntExtra("y", -1)
+                        val screen = intent.getIntExtra("screen", 0)
+
+                        if (label.isNullOrEmpty() || x == -1 || y == -1) {
+                            Log.e("LauncherReceiver", "Missing parameters for CREATE_FOLDER. 'label', 'x' and 'y' are required.")
+                            return@launch
+                        }
+
+                        val result = container.createFolderUseCase.execute(label, GridPosition(x, y, screen))
+                        if (result.isSuccess) {
+                            Log.i("LauncherReceiver", "Successfully created folder '$label' at ($x, $y) on screen $screen")
+                        } else {
+                            Log.e("LauncherReceiver", "Failed to create folder: ${result.exceptionOrNull()?.message}")
+                        }
+                    }
+
+                    "com.example.programlauncher.ADD_TO_FOLDER" -> {
+                        val folder = intent.getStringExtra("folder")
+                        val packageName = intent.getStringExtra("package")
+
+                        if (folder.isNullOrEmpty() || packageName.isNullOrEmpty()) {
+                            Log.e("LauncherReceiver", "Missing parameters for ADD_TO_FOLDER. 'folder' (label) and 'package' are required.")
+                            return@launch
+                        }
+
+                        val result = container.addAppToFolderUseCase.execute(folder, packageName)
+                        if (result.isSuccess) {
+                            Log.i("LauncherReceiver", "Successfully added '$packageName' to folder '$folder'")
+                        } else {
+                            Log.e("LauncherReceiver", "Failed to add app to folder: ${result.exceptionOrNull()?.message}")
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("LauncherReceiver", "Error processing action $action: ${e.message}", e)

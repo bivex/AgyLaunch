@@ -18,4 +18,6 @@ class DependencyContainer(context: Context) {
     val clearLayoutUseCase: ClearLayoutUseCase = ClearLayoutUseCaseImpl(layoutRepository, eventBus)
     val setGridSizeUseCase: SetGridSizeUseCase = SetGridSizeUseCaseImpl(layoutRepository, eventBus)
     val getInstalledAppsUseCase: GetInstalledAppsUseCase = GetInstalledAppsUseCaseImpl(appService)
+    val createFolderUseCase: CreateFolderUseCase = CreateFolderUseCaseImpl(layoutRepository, eventBus)
+    val addAppToFolderUseCase: AddAppToFolderUseCase = AddAppToFolderUseCaseImpl(appService, layoutRepository, eventBus)
 }

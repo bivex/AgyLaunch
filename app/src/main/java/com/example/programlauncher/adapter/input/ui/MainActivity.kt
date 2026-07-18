@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -81,7 +82,8 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
     
     var showDrawer by remember { mutableStateOf(false) }
     var selectedCellForAdd by remember { mutableStateOf<GridPosition?>(null) }
-    var itemToRemove by remember { mutableStateOf<LauncherItem.AppShortcut?>(null) }
+    var itemToRemove by remember { mutableStateOf<LauncherItem?>(null) }
+    var activeFolder by remember { mutableStateOf<LauncherItem.Folder?>(null) }
 
     // Automatically monitor packages installed, uninstalled, or updated
     DisposableEffect(context) {
@@ -144,6 +146,12 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
                     },
                     onShortcutLongClick = { shortcut ->
                         itemToRemove = shortcut
+                    },
+                    onFolderClick = { folder ->
+                        activeFolder = folder
+                    },
+                    onFolderLongClick = { folder ->
+                        itemToRemove = folder
                     },
                     onCellClick = { position ->
                         selectedCellForAdd = position
@@ -210,14 +218,16 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
         }
 
         // Confirm Remove Dialog
-        itemToRemove?.let { shortcut ->
+        itemToRemove?.let { item ->
+            val title = if (item is LauncherItem.Folder) "Remove Folder?" else "Remove Shortcut?"
+            val message = if (item is LauncherItem.Folder) "Are you sure you want to remove '${item.label}' and all its contents?" else "Are you sure you want to remove the shortcut for ${item.label}?"
             AlertDialog(
                 onDismissRequest = { itemToRemove = null },
-                title = { Text("Remove Shortcut?") },
-                text = { Text("Are you sure you want to remove the shortcut for ${shortcut.label}?") },
+                title = { Text(title) },
+                text = { Text(message) },
                 confirmButton = {
                     TextButton(onClick = {
-                        viewModel.removeShortcutAt(shortcut.position.x, shortcut.position.y, shortcut.position.screen)
+                        viewModel.removeShortcutAt(item.position.x, item.position.y, item.position.screen)
                         itemToRemove = null
                     }) {
                         Text("Remove", color = MaterialTheme.colorScheme.error)
@@ -229,6 +239,91 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
                     }
                 }
             )
+        }
+
+        // Opened Folder Dialog
+        activeFolder?.let { folder ->
+            val currentFolder = layoutState?.items?.find { it.id == folder.id } as? LauncherItem.Folder ?: folder
+            
+            Dialog(onDismissRequest = { activeFolder = null }) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .wrapContentHeight(),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xEE1A1A1A)
+                    ),
+                    border = BorderStroke(1.dp, Color(0x22FFFFFF))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp)
+                    ) {
+                        Text(
+                            text = currentFolder.label,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            letterSpacing = (-0.5).sp,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        
+                        if (currentFolder.items.isNotEmpty()) {
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(4),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(currentFolder.items) { app ->
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .clickable {
+                                                launchApp(context, app.packageName, app.className)
+                                                activeFolder = null
+                                            }
+                                            .padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        AppIcon(packageName = app.packageName, modifier = Modifier.size(48.dp))
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            text = app.label,
+                                            color = Color.White,
+                                            fontSize = 11.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            Text(
+                                text = "Empty folder.",
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(vertical = 16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        TextButton(
+                            onClick = { activeFolder = null },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text("Close")
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -354,15 +449,88 @@ fun GlassmorphicHeader(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun FolderItemView(
+    folder: LauncherItem.Folder,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(16.dp))
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
+            .padding(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // 2x2 preview card
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .background(Color(0x22FFFFFF), RoundedCornerShape(14.dp))
+                .border(1.dp, Color(0x11FFFFFF), RoundedCornerShape(14.dp))
+                .padding(6.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val previewItems = folder.items.take(4)
+            if (previewItems.isNotEmpty()) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    userScrollEnabled = false,
+                    horizontalArrangement = Arrangement.spacedBy(3.dp),
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    items(previewItems) { app ->
+                        AppIcon(
+                            packageName = app.packageName,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(4.dp))
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    text = "empty",
+                    fontSize = 8.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = folder.label,
+            color = Color.White,
+            fontSize = 11.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
 @Composable
 fun ColumnScope.HomeScreenGrid(
     layout: LauncherLayout,
     onShortcutClick: (LauncherItem.AppShortcut) -> Unit,
     onShortcutLongClick: (LauncherItem.AppShortcut) -> Unit,
+    onFolderClick: (LauncherItem.Folder) -> Unit,
+    onFolderLongClick: (LauncherItem.Folder) -> Unit,
     onCellClick: (GridPosition) -> Unit
 ) {
     val itemsByPos = remember(layout.items) {
-        layout.items.filterIsInstance<LauncherItem.AppShortcut>().associateBy { it.position }
+        layout.items.associateBy { it.position }
     }
 
     Column(
@@ -392,11 +560,22 @@ fun ColumnScope.HomeScreenGrid(
                         contentAlignment = Alignment.Center
                     ) {
                         if (item != null) {
-                            GridItemView(
-                                shortcut = item,
-                                onClick = { onShortcutClick(item) },
-                                onLongClick = { onShortcutLongClick(item) }
-                            )
+                            when (item) {
+                                is LauncherItem.AppShortcut -> {
+                                    GridItemView(
+                                        shortcut = item,
+                                        onClick = { onShortcutClick(item) },
+                                        onLongClick = { onShortcutLongClick(item) }
+                                    )
+                                }
+                                is LauncherItem.Folder -> {
+                                    FolderItemView(
+                                        folder = item,
+                                        onClick = { onFolderClick(item) },
+                                        onLongClick = { onFolderLongClick(item) }
+                                    )
+                                }
+                            }
                         } else {
                             EmptyCellView(
                                 onClick = { onCellClick(pos) }

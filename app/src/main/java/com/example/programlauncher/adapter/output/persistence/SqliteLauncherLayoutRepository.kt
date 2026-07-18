@@ -58,6 +58,34 @@ class SqliteLauncherLayoutRepository(context: Context) : LauncherLayoutRepositor
                             position = GridPosition(cellX, cellY, screen)
                         )
                     )
+                } else if (itemType == 1) {
+                    val itemsList = mutableListOf<LauncherItem.AppShortcut>()
+                    if (packageName.isNotEmpty()) {
+                        try {
+                            val array = org.json.JSONArray(packageName)
+                            for (i in 0 until array.length()) {
+                                val obj = array.getJSONObject(i)
+                                itemsList.add(
+                                    LauncherItem.AppShortcut(
+                                        packageName = obj.getString("package"),
+                                        className = obj.getString("class"),
+                                        label = obj.getString("label"),
+                                        position = GridPosition(-1, -1, -1)
+                                    )
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                    items.add(
+                        LauncherItem.Folder(
+                            id = id,
+                            label = label,
+                            position = GridPosition(cellX, cellY, screen),
+                            items = itemsList
+                        )
+                    )
                 }
             }
         }
@@ -65,24 +93,54 @@ class SqliteLauncherLayoutRepository(context: Context) : LauncherLayoutRepositor
     }
 
     override fun saveItem(item: LauncherItem): Result<Long> {
-        if (item !is LauncherItem.AppShortcut) {
-            return Result.failure(UnsupportedOperationException("Only AppShortcut is currently supported in database."))
-        }
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
-            put("package_name", item.packageName)
-            put("class_name", item.className)
-            put("label", item.label)
-            put("screen", item.position.screen)
-            put("cell_x", item.position.x)
-            put("cell_y", item.position.y)
-            put("item_type", 0)
+            when (item) {
+                is LauncherItem.AppShortcut -> {
+                    put("package_name", item.packageName)
+                    put("class_name", item.className)
+                    put("label", item.label)
+                    put("screen", item.position.screen)
+                    put("cell_x", item.position.x)
+                    put("cell_y", item.position.y)
+                    put("item_type", 0)
+                }
+                is LauncherItem.Folder -> {
+                    val array = org.json.JSONArray()
+                    item.items.forEach { shortcut ->
+                        val obj = org.json.JSONObject().apply {
+                            put("package", shortcut.packageName)
+                            put("class", shortcut.className)
+                            put("label", shortcut.label)
+                        }
+                        array.put(obj)
+                    }
+                    put("package_name", array.toString())
+                    put("class_name", "")
+                    put("label", item.label)
+                    put("screen", item.position.screen)
+                    put("cell_x", item.position.x)
+                    put("cell_y", item.position.y)
+                    put("item_type", 1)
+                }
+            }
         }
-        val id = db.insert("shortcuts", null, values)
-        return if (id != -1L) {
-            Result.success(id)
+
+        return if (item.id != null) {
+            val rows = db.update("shortcuts", values, "id = ?", arrayOf(item.id.toString()))
+            if (rows > 0) {
+                Result.success(item.id!!)
+            } else {
+                val id = db.insert("shortcuts", null, values)
+                if (id != -1L) Result.success(id) else Result.failure(Exception("Failed to save layout item."))
+            }
         } else {
-            Result.failure(Exception("Failed to insert shortcut into SQLite database."))
+            val id = db.insert("shortcuts", null, values)
+            if (id != -1L) {
+                Result.success(id)
+            } else {
+                Result.failure(Exception("Failed to insert item into SQLite database."))
+            }
         }
     }
 

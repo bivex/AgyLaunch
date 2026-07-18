@@ -42,6 +42,8 @@
                 <action android:name="com.example.programlauncher.REMOVE_SHORTCUT" />
                 <action android:name="com.example.programlauncher.CLEAR_LAYOUT" />
                 <action android:name="com.example.programlauncher.SET_GRID" />
+                <action android:name="com.example.programlauncher.CREATE_FOLDER" />
+                <action android:name="com.example.programlauncher.ADD_TO_FOLDER" />
             </intent-filter>
         </receiver>
 
