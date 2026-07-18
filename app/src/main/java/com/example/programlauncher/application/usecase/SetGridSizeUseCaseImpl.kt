@@ -1,9 +1,9 @@
 package com.example.programlauncher.application.usecase
 
 import com.example.programlauncher.domain.model.GridSize
-import com.example.programlauncher.domain.port.`in`.SetGridSizeUseCase
-import com.example.programlauncher.domain.port.out.LauncherEventPublisher
-import com.example.programlauncher.domain.port.out.LauncherLayoutRepository
+import com.example.programlauncher.domain.port.inputput.SetGridSizeUseCase
+import com.example.programlauncher.domain.port.output.LauncherEventPublisher
+import com.example.programlauncher.domain.port.output.LauncherLayoutRepository
 
 class SetGridSizeUseCaseImpl(
     private val layoutRepository: LauncherLayoutRepository,

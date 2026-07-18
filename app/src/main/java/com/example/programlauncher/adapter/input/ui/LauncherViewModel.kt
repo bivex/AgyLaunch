@@ -1,4 +1,4 @@
-package com.example.programlauncher.adapter.in.ui
+package com.example.programlauncher.adapter.input.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.programlauncher.DependencyContainer
 import com.example.programlauncher.domain.model.GridPosition
 import com.example.programlauncher.domain.model.LauncherLayout
-import com.example.programlauncher.domain.port.`in`.*
-import com.example.programlauncher.domain.port.out.AppDetail
+import com.example.programlauncher.domain.port.inputput.*
+import com.example.programlauncher.domain.port.output.AppDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +19,7 @@ class LauncherViewModel(
     private val addShortcutUseCase: AddShortcutUseCase,
     private val removeShortcutUseCase: RemoveShortcutUseCase,
     private val clearLayoutUseCase: ClearLayoutUseCase,
-    private val eventBus: com.example.programlauncher.adapter.out.event.LauncherEventBus
+    private val eventBus: com.example.programlauncher.adapter.output.event.LauncherEventBus
 ) : ViewModel() {
 
     private val _layoutState = MutableStateFlow<LauncherLayout?>(null)

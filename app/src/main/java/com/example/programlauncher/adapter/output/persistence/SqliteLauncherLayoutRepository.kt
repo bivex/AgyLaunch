@@ -1,11 +1,11 @@
-package com.example.programlauncher.adapter.out.persistence
+package com.example.programlauncher.adapter.output.persistence
 
 import android.content.ContentValues
 import android.content.Context
 import com.example.programlauncher.domain.model.GridPosition
 import com.example.programlauncher.domain.model.GridSize
 import com.example.programlauncher.domain.model.LauncherItem
-import com.example.programlauncher.domain.port.out.LauncherLayoutRepository
+import com.example.programlauncher.domain.port.output.LauncherLayoutRepository
 
 class SqliteLauncherLayoutRepository(context: Context) : LauncherLayoutRepository {
     private val dbHelper = LauncherDbHelper(context)

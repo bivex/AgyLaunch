@@ -1,11 +1,11 @@
 package com.example.programlauncher
 
 import android.content.Context
-import com.example.programlauncher.adapter.out.event.LauncherEventBus
-import com.example.programlauncher.adapter.out.persistence.SqliteLauncherLayoutRepository
-import com.example.programlauncher.adapter.out.system.AndroidAppService
+import com.example.programlauncher.adapter.output.event.LauncherEventBus
+import com.example.programlauncher.adapter.output.persistence.SqliteLauncherLayoutRepository
+import com.example.programlauncher.adapter.output.system.AndroidAppService
 import com.example.programlauncher.application.usecase.*
-import com.example.programlauncher.domain.port.`in`.*
+import com.example.programlauncher.domain.port.inputput.*
 
 class DependencyContainer(context: Context) {
     val eventBus = LauncherEventBus()

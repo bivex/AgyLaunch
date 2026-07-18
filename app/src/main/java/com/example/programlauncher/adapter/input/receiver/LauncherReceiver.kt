@@ -1,4 +1,4 @@
-package com.example.programlauncher.adapter.in.receiver
+package com.example.programlauncher.adapter.input.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

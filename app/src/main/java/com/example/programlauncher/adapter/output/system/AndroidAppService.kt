@@ -1,9 +1,9 @@
-package com.example.programlauncher.adapter.out.system
+package com.example.programlauncher.adapter.output.system
 
 import android.content.Context
 import android.content.Intent
-import com.example.programlauncher.domain.port.out.AppDetail
-import com.example.programlauncher.domain.port.out.AppService
+import com.example.programlauncher.domain.port.output.AppDetail
+import com.example.programlauncher.domain.port.output.AppService
 
 class AndroidAppService(private val context: Context) : AppService {
 

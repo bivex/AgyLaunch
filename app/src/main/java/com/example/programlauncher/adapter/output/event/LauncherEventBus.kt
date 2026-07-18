@@ -1,6 +1,6 @@
-package com.example.programlauncher.adapter.out.event
+package com.example.programlauncher.adapter.output.event
 
-import com.example.programlauncher.domain.port.out.LauncherEventPublisher
+import com.example.programlauncher.domain.port.output.LauncherEventPublisher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

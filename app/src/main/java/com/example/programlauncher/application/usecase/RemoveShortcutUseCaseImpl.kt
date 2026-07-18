@@ -1,8 +1,8 @@
 package com.example.programlauncher.application.usecase
 
-import com.example.programlauncher.domain.port.`in`.RemoveShortcutUseCase
-import com.example.programlauncher.domain.port.out.LauncherEventPublisher
-import com.example.programlauncher.domain.port.out.LauncherLayoutRepository
+import com.example.programlauncher.domain.port.inputput.RemoveShortcutUseCase
+import com.example.programlauncher.domain.port.output.LauncherEventPublisher
+import com.example.programlauncher.domain.port.output.LauncherLayoutRepository
 
 class RemoveShortcutUseCaseImpl(
     private val layoutRepository: LauncherLayoutRepository,

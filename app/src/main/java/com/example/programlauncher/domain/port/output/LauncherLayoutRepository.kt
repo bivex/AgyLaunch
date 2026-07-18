@@ -1,4 +1,4 @@
-package com.example.programlauncher.domain.port.out
+package com.example.programlauncher.domain.port.output
 
 import com.example.programlauncher.domain.model.GridSize
 import com.example.programlauncher.domain.model.LauncherItem

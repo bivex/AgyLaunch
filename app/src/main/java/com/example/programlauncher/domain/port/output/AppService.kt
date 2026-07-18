@@ -1,4 +1,4 @@
-package com.example.programlauncher.domain.port.out
+package com.example.programlauncher.domain.port.output
 
 data class AppDetail(
     val packageName: String,

@@ -1,4 +1,4 @@
-package com.example.programlauncher.adapter.in.ui
+package com.example.programlauncher.adapter.input.ui
 
 import android.content.Context
 import android.content.Intent
@@ -13,8 +13,10 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -37,7 +39,7 @@ import com.example.programlauncher.LauncherApplication
 import com.example.programlauncher.domain.model.GridPosition
 import com.example.programlauncher.domain.model.LauncherItem
 import com.example.programlauncher.domain.model.LauncherLayout
-import com.example.programlauncher.domain.port.out.AppDetail
+import com.example.programlauncher.domain.port.output.AppDetail
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -256,7 +258,7 @@ fun GlassmorphicHeader(onOpenDrawer: () -> Unit, onClearLayout: () -> Unit) {
 }
 
 @Composable
-fun HomeScreenGrid(
+fun ColumnScope.HomeScreenGrid(
     layout: LauncherLayout,
     onShortcutClick: (LauncherItem.AppShortcut) -> Unit,
     onShortcutLongClick: (LauncherItem.AppShortcut) -> Unit,
@@ -355,7 +357,7 @@ fun EmptyCellView(onClick: () -> Unit) {
             .fillMaxSize()
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, Color(0x0AFFFFFF), RoundedCornerShape(16.dp))
-            .combinedClickable(
+            .clickable(
                 onClick = onClick
             ),
         contentAlignment = Alignment.Center

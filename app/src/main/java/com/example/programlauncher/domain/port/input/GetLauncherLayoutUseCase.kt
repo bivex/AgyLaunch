@@ -1,4 +1,4 @@
-package com.example.programlauncher.domain.port.`in`
+package com.example.programlauncher.domain.port.inputput
 
 import com.example.programlauncher.domain.model.LauncherLayout
 

@@ -1,4 +1,4 @@
-package com.example.programlauncher.adapter.out.persistence
+package com.example.programlauncher.adapter.output.persistence
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

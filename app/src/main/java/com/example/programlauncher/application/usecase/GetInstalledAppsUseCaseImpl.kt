@@ -1,8 +1,8 @@
 package com.example.programlauncher.application.usecase
 
-import com.example.programlauncher.domain.port.`in`.GetInstalledAppsUseCase
-import com.example.programlauncher.domain.port.out.AppDetail
-import com.example.programlauncher.domain.port.out.AppService
+import com.example.programlauncher.domain.port.inputput.GetInstalledAppsUseCase
+import com.example.programlauncher.domain.port.output.AppDetail
+import com.example.programlauncher.domain.port.output.AppService
 
 class GetInstalledAppsUseCaseImpl(
     private val appService: AppService

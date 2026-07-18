@@ -1,8 +1,8 @@
 package com.example.programlauncher.application.usecase
 
-import com.example.programlauncher.domain.port.`in`.ClearLayoutUseCase
-import com.example.programlauncher.domain.port.out.LauncherEventPublisher
-import com.example.programlauncher.domain.port.out.LauncherLayoutRepository
+import com.example.programlauncher.domain.port.inputput.ClearLayoutUseCase
+import com.example.programlauncher.domain.port.output.LauncherEventPublisher
+import com.example.programlauncher.domain.port.output.LauncherLayoutRepository
 
 class ClearLayoutUseCaseImpl(
     private val layoutRepository: LauncherLayoutRepository,
