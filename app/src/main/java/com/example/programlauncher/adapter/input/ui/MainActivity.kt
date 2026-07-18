@@ -698,6 +698,19 @@ fun AppDrawerContent(
     onAppClick: (AppDetail) -> Unit,
     onAppLongClick: (AppDetail) -> Unit
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredApps = remember(installedApps, searchQuery) {
+        if (searchQuery.isBlank()) {
+            installedApps
+        } else {
+            installedApps.filter {
+                it.label.contains(searchQuery, ignoreCase = true) ||
+                it.packageName.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -709,7 +722,7 @@ fun AppDrawerContent(
             color = Color.White,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
             text = "Hold down an app to pin it to the home screen.",
@@ -718,18 +731,65 @@ fun AppDrawerContent(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(4),
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(installedApps) { app ->
-                AppDrawerItem(
-                    app = app,
-                    onClick = { onAppClick(app) },
-                    onLongClick = { onAppLongClick(app) }
+        // Glassmorphic search bar
+        TextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholder = { Text("Search apps...", color = Color.Gray, fontSize = 14.sp) },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedContainerColor = Color(0x22FFFFFF),
+                unfocusedContainerColor = Color(0x15FFFFFF),
+                cursorColor = Color.White,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(14.dp),
+            leadingIcon = {
+                Text("🔍", fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
+            },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { searchQuery = "" }) {
+                        Text("✕", color = Color.White, fontSize = 14.sp)
+                    }
+                }
+            }
+        )
+
+        if (filteredApps.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No apps found for \"$searchQuery\"",
+                    color = Color.Gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
                 )
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(filteredApps) { app ->
+                    AppDrawerItem(
+                        app = app,
+                        onClick = { onAppClick(app) },
+                        onLongClick = { onAppLongClick(app) }
+                    )
+                }
             }
         }
     }
