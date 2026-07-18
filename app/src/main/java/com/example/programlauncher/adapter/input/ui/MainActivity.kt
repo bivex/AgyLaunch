@@ -107,7 +107,11 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
             addAction(Intent.ACTION_PACKAGE_REPLACED)
             addDataScheme("package")
         }
-        context.registerReceiver(receiver, filter)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(receiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(receiver, filter)
+        }
         onDispose {
             context.unregisterReceiver(receiver)
         }
@@ -673,7 +677,9 @@ fun AppIcon(packageName: String, modifier: Modifier = Modifier) {
                 }
             },
             update = { imageView ->
-                imageView.setImageDrawable(iconDrawable)
+                if (imageView.drawable != iconDrawable) {
+                    imageView.setImageDrawable(iconDrawable)
+                }
             },
             modifier = modifier
         )
