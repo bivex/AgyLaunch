@@ -303,7 +303,8 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
                                             fontSize = 11.sp,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
-                                            textAlign = TextAlign.Center
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
                                         )
                                     }
                                 }
@@ -483,21 +484,61 @@ fun FolderItemView(
         ) {
             val previewItems = folder.items.take(4)
             if (previewItems.isNotEmpty()) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+                Column(
                     modifier = Modifier.fillMaxSize(),
-                    userScrollEnabled = false,
-                    horizontalArrangement = Arrangement.spacedBy(3.dp),
-                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    items(previewItems) { app ->
-                        AppIcon(
-                            packageName = app.packageName,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .aspectRatio(1f)
-                                .clip(RoundedCornerShape(4.dp))
-                        )
+                    // Row 1
+                    Row(
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                            if (previewItems.size > 0) {
+                                AppIcon(
+                                    packageName = previewItems[0].packageName,
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(3.dp))
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.fillMaxSize())
+                            }
+                        }
+                        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                            if (previewItems.size > 1) {
+                                AppIcon(
+                                    packageName = previewItems[1].packageName,
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(3.dp))
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.fillMaxSize())
+                            }
+                        }
+                    }
+                    // Row 2
+                    Row(
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                            if (previewItems.size > 2) {
+                                AppIcon(
+                                    packageName = previewItems[2].packageName,
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(3.dp))
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.fillMaxSize())
+                            }
+                        }
+                        Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                            if (previewItems.size > 3) {
+                                AppIcon(
+                                    packageName = previewItems[3].packageName,
+                                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(3.dp))
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.fillMaxSize())
+                            }
+                        }
                     }
                 }
             } else {
@@ -519,7 +560,8 @@ fun FolderItemView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -625,7 +667,8 @@ fun GridItemView(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -672,6 +715,10 @@ fun AppIcon(packageName: String, modifier: Modifier = Modifier) {
         AndroidView(
             factory = { ctx ->
                 ImageView(ctx).apply {
+                    layoutParams = android.view.ViewGroup.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                        android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                    )
                     scaleType = ImageView.ScaleType.FIT_CENTER
                     setImageDrawable(iconDrawable)
                 }
@@ -824,7 +871,8 @@ fun AppDrawerItem(
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -882,7 +930,8 @@ fun AddShortcutDialog(
                                 fontSize = 11.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
