@@ -1,4 +1,4 @@
-package com.example.programlauncher.domain.port.inputput
+package com.example.programlauncher.domain.port.input
 
 interface ClearLayoutUseCase {
     fun execute()

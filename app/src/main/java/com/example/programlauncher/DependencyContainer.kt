@@ -5,7 +5,7 @@ import com.example.programlauncher.adapter.output.event.LauncherEventBus
 import com.example.programlauncher.adapter.output.persistence.SqliteLauncherLayoutRepository
 import com.example.programlauncher.adapter.output.system.AndroidAppService
 import com.example.programlauncher.application.usecase.*
-import com.example.programlauncher.domain.port.inputput.*
+import com.example.programlauncher.domain.port.input.*
 
 class DependencyContainer(context: Context) {
     val eventBus = LauncherEventBus()

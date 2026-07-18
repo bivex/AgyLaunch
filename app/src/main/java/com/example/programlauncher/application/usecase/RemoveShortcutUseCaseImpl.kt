@@ -1,6 +1,6 @@
 package com.example.programlauncher.application.usecase
 
-import com.example.programlauncher.domain.port.inputput.RemoveShortcutUseCase
+import com.example.programlauncher.domain.port.input.RemoveShortcutUseCase
 import com.example.programlauncher.domain.port.output.LauncherEventPublisher
 import com.example.programlauncher.domain.port.output.LauncherLayoutRepository
 

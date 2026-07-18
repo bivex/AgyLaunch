@@ -3,7 +3,7 @@ package com.example.programlauncher.application.usecase
 import com.example.programlauncher.domain.model.GridPosition
 import com.example.programlauncher.domain.model.LauncherItem
 import com.example.programlauncher.domain.model.LauncherLayout
-import com.example.programlauncher.domain.port.inputput.AddShortcutUseCase
+import com.example.programlauncher.domain.port.input.AddShortcutUseCase
 import com.example.programlauncher.domain.port.output.AppService
 import com.example.programlauncher.domain.port.output.LauncherEventPublisher
 import com.example.programlauncher.domain.port.output.LauncherLayoutRepository

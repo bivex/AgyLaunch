@@ -1,7 +1,7 @@
 package com.example.programlauncher.application.usecase
 
 import com.example.programlauncher.domain.model.GridSize
-import com.example.programlauncher.domain.port.inputput.SetGridSizeUseCase
+import com.example.programlauncher.domain.port.input.SetGridSizeUseCase
 import com.example.programlauncher.domain.port.output.LauncherEventPublisher
 import com.example.programlauncher.domain.port.output.LauncherLayoutRepository
 

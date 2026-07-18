@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.programlauncher.DependencyContainer
 import com.example.programlauncher.domain.model.GridPosition
 import com.example.programlauncher.domain.model.LauncherLayout
-import com.example.programlauncher.domain.port.inputput.*
+import com.example.programlauncher.domain.port.input.*
 import com.example.programlauncher.domain.port.output.AppDetail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +35,14 @@ class LauncherViewModel(
         // Listen for layout changes published by receivers or other use cases
         viewModelScope.launch {
             eventBus.events.collect {
+                loadLayout()
+            }
+        }
+
+        // Periodic auto-refresh every 5 seconds to keep the grid in sync
+        viewModelScope.launch {
+            while (true) {
+                kotlinx.coroutines.delay(5000)
                 loadLayout()
             }
         }

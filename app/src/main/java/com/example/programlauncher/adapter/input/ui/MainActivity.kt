@@ -82,6 +82,34 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
     var selectedCellForAdd by remember { mutableStateOf<GridPosition?>(null) }
     var itemToRemove by remember { mutableStateOf<LauncherItem.AppShortcut?>(null) }
 
+    // Automatically monitor packages installed, uninstalled, or updated
+    DisposableEffect(context) {
+        val receiver = object : android.content.BroadcastReceiver() {
+            override fun onReceive(ctx: Context, intent: Intent) {
+                viewModel.loadInstalledApps()
+                viewModel.loadLayout()
+                
+                if (intent.action == Intent.ACTION_PACKAGE_REMOVED) {
+                    val packageName = intent.data?.schemeSpecificPart
+                    val isReplacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+                    if (packageName != null && !isReplacing) {
+                        viewModel.removeShortcut(packageName)
+                    }
+                }
+            }
+        }
+        val filter = android.content.IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_REPLACED)
+            addDataScheme("package")
+        }
+        context.registerReceiver(receiver, filter)
+        onDispose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()

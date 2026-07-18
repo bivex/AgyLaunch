@@ -1,6 +1,6 @@
 package com.example.programlauncher.application.usecase
 
-import com.example.programlauncher.domain.port.inputput.GetInstalledAppsUseCase
+import com.example.programlauncher.domain.port.input.GetInstalledAppsUseCase
 import com.example.programlauncher.domain.port.output.AppDetail
 import com.example.programlauncher.domain.port.output.AppService
 

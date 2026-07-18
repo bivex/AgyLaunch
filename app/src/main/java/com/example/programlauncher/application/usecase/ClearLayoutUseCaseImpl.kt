@@ -1,6 +1,6 @@
 package com.example.programlauncher.application.usecase
 
-import com.example.programlauncher.domain.port.inputput.ClearLayoutUseCase
+import com.example.programlauncher.domain.port.input.ClearLayoutUseCase
 import com.example.programlauncher.domain.port.output.LauncherEventPublisher
 import com.example.programlauncher.domain.port.output.LauncherLayoutRepository
 
