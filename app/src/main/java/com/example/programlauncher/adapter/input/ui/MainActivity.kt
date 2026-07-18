@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
 fun LauncherScreen(viewModel: LauncherViewModel) {
     val layoutState by viewModel.layoutState.collectAsState()
     val installedApps by viewModel.installedApps.collectAsState()
+    val dbQueryTimeMs by viewModel.dbQueryTimeMs.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     
@@ -124,11 +125,15 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
         ) {
             // Header with clock / status
             GlassmorphicHeader(
+                dbQueryTimeMs = dbQueryTimeMs,
                 onOpenDrawer = { showDrawer = true },
                 onClearLayout = { viewModel.clearLayout() }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // Dynamic clock widget
+            ClockWidget()
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Launcher grid view
             layoutState?.let { layout ->
@@ -229,7 +234,49 @@ fun LauncherScreen(viewModel: LauncherViewModel) {
 }
 
 @Composable
-fun GlassmorphicHeader(onOpenDrawer: () -> Unit, onClearLayout: () -> Unit) {
+fun ClockWidget() {
+    var timeText by remember { mutableStateOf("--:--") }
+    var dateText by remember { mutableStateOf("---") }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            val calendar = java.util.Calendar.getInstance()
+            timeText = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(calendar.time)
+            dateText = java.text.SimpleDateFormat("EEEE, d MMMM", java.util.Locale.getDefault()).format(calendar.time)
+            kotlinx.coroutines.delay(1000)
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
+        Text(
+            text = timeText,
+            fontSize = 64.sp,
+            fontWeight = FontWeight.Light,
+            color = Color.White,
+            letterSpacing = (-2).sp,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = dateText,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xB3FFFFFF),
+            letterSpacing = (-0.3).sp,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun GlassmorphicHeader(
+    dbQueryTimeMs: Double,
+    onOpenDrawer: () -> Unit,
+    onClearLayout: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -251,13 +298,35 @@ fun GlassmorphicHeader(onOpenDrawer: () -> Unit, onClearLayout: () -> Unit) {
                     text = "AGY Launcher",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color.White,
+                    letterSpacing = (-0.5).sp
                 )
-                Text(
-                    text = "DDD & Hexagonal Layout",
-                    fontSize = 11.sp,
-                    color = Color.LightGray
-                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "DDD & Hexagonal",
+                        fontSize = 11.sp,
+                        color = Color.LightGray,
+                        letterSpacing = (-0.2).sp
+                    )
+                    // Profile/performance badge
+                    Surface(
+                        color = Color(0x2200FFCC),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = String.format(java.util.Locale.US, "⚡ DB: %.2f ms", dbQueryTimeMs),
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF00FFCC),
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                        )
+                    }
+                }
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

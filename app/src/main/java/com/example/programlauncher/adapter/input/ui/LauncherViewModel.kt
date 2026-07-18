@@ -28,6 +28,9 @@ class LauncherViewModel(
     private val _installedApps = MutableStateFlow<List<AppDetail>>(emptyList())
     val installedApps: StateFlow<List<AppDetail>> = _installedApps.asStateFlow()
 
+    private val _dbQueryTimeMs = MutableStateFlow<Double>(0.0)
+    val dbQueryTimeMs: StateFlow<Double> = _dbQueryTimeMs.asStateFlow()
+
     init {
         loadLayout()
         loadInstalledApps()
@@ -50,7 +53,10 @@ class LauncherViewModel(
 
     fun loadLayout() {
         viewModelScope.launch {
+            val startTime = System.nanoTime()
             val layout = getLauncherLayoutUseCase.execute()
+            val endTime = System.nanoTime()
+            _dbQueryTimeMs.value = (endTime - startTime) / 1_000_000.0
             _layoutState.value = layout
         }
     }
