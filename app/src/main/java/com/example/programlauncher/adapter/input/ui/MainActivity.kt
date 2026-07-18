@@ -468,11 +468,21 @@ fun EmptyCellView(onClick: () -> Unit) {
     }
 }
 
+// Simple thread-safe memory cache for loaded icons to avoid repeating heavy PackageManager queries
+private val iconCache = java.util.concurrent.ConcurrentHashMap<String, Drawable>()
+
 @Composable
 fun AppIcon(packageName: String, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val iconDrawable = remember(packageName) {
-        getAppIcon(context, packageName)
+    var iconDrawable by remember(packageName) { mutableStateOf<Drawable?>(iconCache[packageName]) }
+
+    if (iconDrawable == null) {
+        LaunchedEffect(packageName) {
+            val drawable = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                getAppIcon(context, packageName)
+            }
+            iconDrawable = drawable
+        }
     }
 
     if (iconDrawable != null) {
@@ -483,13 +493,16 @@ fun AppIcon(packageName: String, modifier: Modifier = Modifier) {
                     setImageDrawable(iconDrawable)
                 }
             },
+            update = { imageView ->
+                imageView.setImageDrawable(iconDrawable)
+            },
             modifier = modifier
         )
     } else {
-        // Fallback placeholder
+        // Glassmorphic placeholder while loading asynchronously
         Box(
             modifier = modifier
-                .background(Color(0x33FFFFFF), RoundedCornerShape(8.dp))
+                .background(Color(0x15FFFFFF), RoundedCornerShape(12.dp))
         )
     }
 }
@@ -656,8 +669,11 @@ private fun launchApp(context: Context, packageName: String, className: String) 
 }
 
 private fun getAppIcon(context: Context, packageName: String): Drawable? {
+    iconCache[packageName]?.let { return it }
     return try {
-        context.packageManager.getApplicationIcon(packageName)
+        val drawable = context.packageManager.getApplicationIcon(packageName)
+        iconCache[packageName] = drawable
+        drawable
     } catch (e: PackageManager.NameNotFoundException) {
         null
     }
