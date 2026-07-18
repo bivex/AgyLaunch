@@ -54,7 +54,9 @@ class LauncherViewModel(
     fun loadLayout() {
         viewModelScope.launch {
             val startTime = System.nanoTime()
-            val layout = getLauncherLayoutUseCase.execute()
+            val layout = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                getLauncherLayoutUseCase.execute()
+            }
             val endTime = System.nanoTime()
             _dbQueryTimeMs.value = (endTime - startTime) / 1_000_000.0
             _layoutState.value = layout
@@ -63,7 +65,9 @@ class LauncherViewModel(
 
     fun loadInstalledApps() {
         viewModelScope.launch {
-            val apps = getInstalledAppsUseCase.execute()
+            val apps = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                getInstalledAppsUseCase.execute()
+            }
             _installedApps.value = apps
         }
     }
