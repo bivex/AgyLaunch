@@ -1,0 +1,12 @@
+# Android/IntelliJ built files
+build/
+.gradle/
+local.properties
+.idea/
+*.apk
+*.aar
+captures/
+
+# OS files
+.DS_Store
+Thumbs.db
